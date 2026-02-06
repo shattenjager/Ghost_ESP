@@ -6366,6 +6366,7 @@ esp_err_t mdns_service_instance_name_set_for_host(const char *instance_old, cons
     }
     s->service->instance = strndup(instance, MDNS_NAME_BUF_LEN - 1);
     ESP_GOTO_ON_FALSE(s->service->instance, ESP_ERR_NO_MEM, err, TAG, "Out of memory");
+
     _mdns_probe_all_pcbs(&s, 1, false, false);
 
 err:
