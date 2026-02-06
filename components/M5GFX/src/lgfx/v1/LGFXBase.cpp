@@ -2587,8 +2587,16 @@ namespace lgfx
     for (; version <= 40; ++version)
     {
       QRCode qrcode;
-      auto qrcodeData = (uint8_t*)alloca(lgfx_qrcode_getBufferSize(version));
-      if (0 != lgfx_qrcode_initText(&qrcode, qrcodeData, version, 0, string)) continue;
+      std::size_t qrcodeBufferSize = lgfx_qrcode_getBufferSize(version);
+      auto qrcodeData = static_cast<uint8_t*>(malloc(qrcodeBufferSize));
+      if (qrcodeData == nullptr) {
+        // Allocation failed; cannot proceed safely.
+        break;
+      }
+      if (0 != lgfx_qrcode_initText(&qrcode, qrcodeData, version, 0, string)) {
+        free(qrcodeData);
+        continue;
+      }
       int_fast16_t thickness = w / qrcode.size;
       int_fast16_t lineLength = qrcode.size * thickness;
       int_fast16_t offset = (w - lineLength) >> 1;
@@ -2623,6 +2631,7 @@ namespace lgfx
       }
       writeFillRect(x, dy, w, y + w - dy, TFT_WHITE);
       endWrite();
+      free(qrcodeData);
       break;
     }
   }
