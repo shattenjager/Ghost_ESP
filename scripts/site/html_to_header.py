@@ -40,7 +40,7 @@ def main():
             print(f"Warning: Error minifying CSS: {e}")
             return match.group(0)
     
-    html_content = re.sub(r'<style>(.*?)</style>', minify_css, html_content, flags=re.DOTALL)
+    html_content = re.sub(r'<style\b[^>]*>(.*?)</style\b[^>]*>', minify_css, html_content, flags=re.DOTALL | re.IGNORECASE)
     
     def minify_js(match):
         js_content = match.group(1)
@@ -51,7 +51,7 @@ def main():
             print(f"Warning: Error minifying JavaScript: {e}")
             return match.group(0)
     
-    html_content = re.sub(r'<script>(.*?)</script>', minify_js, html_content, flags=re.DOTALL)
+    html_content = re.sub(r'<script\b[^>]*>(.*?)</script\b[^>]*>', minify_js, html_content, flags=re.DOTALL | re.IGNORECASE)
     
     try:
         minified_html = html_minify(html_content, 
